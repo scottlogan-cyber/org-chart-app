@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import type { OrgRow } from '../types'
 import {
   getChartDimensions,
@@ -7,23 +7,57 @@ import {
   getTiers,
 } from '../utils/chartLayout'
 
+const ORB_FACES = ['top', 'bottom', 'left', 'right'] as const
+type OrbFace = (typeof ORB_FACES)[number]
+
 interface Props {
   rows: OrgRow[]
+  customConnections?: [number, number][]
+  onConnectionAdded?: (from: number, to: number) => void
 }
 
 const NODE_WIDTH = 120
 const NODE_HEIGHT = 56
 const GAP_X = 16
 const GAP_Y = 32
+const WRAPPER_PADDING = 56
 
-export const OrgChart = React.forwardRef<HTMLDivElement, Props>(function OrgChart({ rows }, ref) {
+export const OrgChart = React.forwardRef<HTMLDivElement, Props>(function OrgChart(
+  { rows, customConnections, onConnectionAdded },
+  ref
+) {
+  const [pendingOrb, setPendingOrb] = useState<{ node: number; face: OrbFace } | null>(null)
+
   const n = Math.max(1, rows.length)
   const byNumber = new Map(rows.map((r) => [r.number, r]))
   const { width, height } = getChartDimensions(n, NODE_WIDTH, NODE_HEIGHT, GAP_X, GAP_Y)
-  const connections = getConnections(n)
+  const connections =
+    customConnections && customConnections.length > 0
+      ? customConnections
+      : getConnections(n)
+
+  const handleOrbClick = (node: number, face: OrbFace, e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (!onConnectionAdded) return
+    if (pendingOrb) {
+      if (pendingOrb.node !== node) {
+        onConnectionAdded(pendingOrb.node, node)
+      }
+      setPendingOrb(null)
+    } else {
+      setPendingOrb({ node, face })
+    }
+  }
 
   return (
-    <div className="org-chart-wrapper" ref={ref}>
+    <div
+      className="org-chart-wrapper"
+      ref={ref}
+      style={{
+        width: width + WRAPPER_PADDING,
+        height: height + WRAPPER_PADDING,
+      }}
+    >
       <div className="org-chart-3d">
         <svg
           className="org-chart-connectors"
@@ -56,6 +90,7 @@ export const OrgChart = React.forwardRef<HTMLDivElement, Props>(function OrgChar
             const row = byNumber.get(num)
             const label = row?.name || (num === 1 ? 'CEO' : `#${num}`)
             const sub = row?.title || ''
+            const isPending = pendingOrb?.node === num
             return (
               <div
                 key={num}
@@ -70,6 +105,17 @@ export const OrgChart = React.forwardRef<HTMLDivElement, Props>(function OrgChar
               >
                 <div className="org-chart-node-label">{label}</div>
                 {sub && <div className="org-chart-node-title">{sub}</div>}
+                {onConnectionAdded &&
+                  ORB_FACES.map((face) => (
+                    <button
+                      key={face}
+                      type="button"
+                      className={`org-chart-orb org-chart-orb--${face} ${isPending ? 'org-chart-orb--pending' : ''}`}
+                      title={`Connect from here (click another node's orb to link)`}
+                      onClick={(e) => handleOrbClick(num, face, e)}
+                      aria-label={`Connection orb ${face}`}
+                    />
+                  ))}
               </div>
             )
           })}

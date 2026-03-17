@@ -101,6 +101,28 @@
   margin-top: 4px;
 }
 
+.connection-hint {
+  margin-top: 12px;
+  font-size: 0.75rem;
+  opacity: 0.85;
+  line-height: 1.3;
+}
+
+.reset-connections {
+  margin-top: 8px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.08);
+  color: #e8e8e8;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.reset-connections:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
 .actions {
   display: flex;
   flex-direction: column;
@@ -155,7 +177,7 @@
   min-height: 80vh;
   overflow: auto;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: flex-start;
   padding: 24px;
   z-index: 2;
@@ -179,11 +201,10 @@
   border-radius: 20px;
   background: rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  min-width: 520px;
-  min-height: 70vh;
-  display: inline-flex;
+  flex-shrink: 0;
+  display: inline-block;
   align-items: flex-start;
-  justify-content: center;
+  justify-content: flex-start;
 }
 
 .org-chart-3d {
@@ -214,6 +235,74 @@
 .org-chart-node:hover {
   transform: scale(1.05);
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+}
+
+/* Connection orbs on each face */
+.org-chart-orb {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  background: rgba(99, 102, 241, 0.8);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.15s, background 0.15s, box-shadow 0.15s;
+}
+
+.org-chart-orb:hover {
+  transform: scale(1.3);
+  background: rgba(139, 92, 246, 0.95);
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.6);
+}
+
+.org-chart-orb--pending {
+  background: rgba(34, 197, 94, 0.95);
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.7);
+}
+
+.org-chart-orb--top {
+  left: 50%;
+  top: -6px;
+  transform: translateX(-50%);
+}
+
+.org-chart-orb--top:hover,
+.org-chart-orb--top.org-chart-orb--pending {
+  transform: translateX(-50%) scale(1.3);
+}
+
+.org-chart-orb--bottom {
+  left: 50%;
+  bottom: -6px;
+  transform: translateX(-50%);
+}
+
+.org-chart-orb--bottom:hover,
+.org-chart-orb--bottom.org-chart-orb--pending {
+  transform: translateX(-50%) scale(1.3);
+}
+
+.org-chart-orb--left {
+  left: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.org-chart-orb--left:hover,
+.org-chart-orb--left.org-chart-orb--pending {
+  transform: translateY(-50%) scale(1.3);
+}
+
+.org-chart-orb--right {
+  right: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.org-chart-orb--right:hover,
+.org-chart-orb--right.org-chart-orb--pending {
+  transform: translateY(-50%) scale(1.3);
 }
 
 .org-chart-node-label {

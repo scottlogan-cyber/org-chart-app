@@ -35,12 +35,21 @@ function mergeRows(existing: OrgRow[], newCount: number): OrgRow[] {
 function App() {
   const [chartSize, setChartSize] = useState(10)
   const [rows, setRows] = useState<OrgRow[]>(() => createRows(10))
+  const [customConnections, setCustomConnections] = useState<[number, number][]>([])
   const chartRef = useRef<HTMLDivElement>(null)
 
   const handleChartSizeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const next = parseInt(e.target.value, 10)
     setChartSize(next)
     setRows((prev) => mergeRows(prev, next))
+  }
+
+  const handleConnectionAdded = (from: number, to: number) => {
+    setCustomConnections((prev) => [...prev, [from, to]])
+  }
+
+  const handleResetConnections = () => {
+    setCustomConnections([])
   }
 
   const handleExportPDF = async () => {
@@ -99,6 +108,18 @@ function App() {
             ))}
           </select>
         </div>
+        <div className="connection-hint">
+          Click an orb on one node, then an orb on another to link them. Layout stays the same.
+        </div>
+        {customConnections.length > 0 && (
+          <button
+            type="button"
+            className="reset-connections"
+            onClick={handleResetConnections}
+          >
+            Reset to default layout
+          </button>
+        )}
         <div className="actions">
           <button type="button" className="export-pdf" onClick={handleExportPDF}>
             Export PDF
@@ -118,7 +139,12 @@ function App() {
         </div>
       </div>
       <div className="chart-panel">
-        <OrgChart rows={rows} />
+        <OrgChart
+          ref={chartRef}
+          rows={rows}
+          customConnections={customConnections.length > 0 ? customConnections : undefined}
+          onConnectionAdded={handleConnectionAdded}
+        />
       </div>
     </div>
   )
