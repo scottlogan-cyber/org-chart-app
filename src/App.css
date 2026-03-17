@@ -64,6 +64,35 @@
   color: rgba(255, 255, 255, 0.4);
 }
 
+.chart-size-row {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.chart-size-row label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+.chart-size-select {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.2);
+  color: #e8e8e8;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.number-name-table-scroll {
+  max-height: 280px;
+  overflow-y: auto;
+  margin-top: 4px;
+}
+
 .actions {
   display: flex;
   flex-direction: column;
@@ -115,19 +144,25 @@
 
 .chart-panel {
   flex: 1;
-  min-width: 480px;
+  min-width: 640px;
+  min-height: 80vh;
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding: 20px;
+  padding: 24px;
 }
 
 /* Org chart: 3D + floating */
 .org-chart-wrapper {
-  padding: 24px;
+  padding: 28px;
   border-radius: 20px;
   background: rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.08);
+  min-width: 520px;
+  min-height: 70vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
 }
 
 .org-chart-3d {
@@ -154,17 +189,6 @@
   animation: float 4s ease-in-out infinite;
   transition: transform 0.2s, box-shadow 0.2s;
 }
-
-.org-chart-node:nth-child(1) { animation-delay: 0s; }
-.org-chart-node:nth-child(2) { animation-delay: 0.2s; }
-.org-chart-node:nth-child(3) { animation-delay: 0.4s; }
-.org-chart-node:nth-child(4) { animation-delay: 0.6s; }
-.org-chart-node:nth-child(5) { animation-delay: 0.8s; }
-.org-chart-node:nth-child(6) { animation-delay: 1s; }
-.org-chart-node:nth-child(7) { animation-delay: 1.2s; }
-.org-chart-node:nth-child(8) { animation-delay: 1.4s; }
-.org-chart-node:nth-child(9) { animation-delay: 1.6s; }
-.org-chart-node:nth-child(10) { animation-delay: 1.8s; }
 
 .org-chart-node:hover {
   transform: scale(1.05);

@@ -1,50 +1,26 @@
 import React from 'react'
 import type { OrgRow } from '../types'
+import {
+  getChartDimensions,
+  getConnections,
+  getPosition,
+  getTiers,
+} from '../utils/chartLayout'
 
 interface Props {
   rows: OrgRow[]
 }
 
-const NODE_WIDTH = 140
-const NODE_HEIGHT = 72
-const GAP_X = 24
-const GAP_Y = 48
-
-function getPosition(role: number): { x: number; y: number } {
-  const rowW = NODE_WIDTH + GAP_X
-  if (role === 1) return { x: 2 * rowW, y: 0 }
-  if (role >= 2 && role <= 5) {
-    const i = role - 2
-    return { x: (i + 0.5) * rowW, y: NODE_HEIGHT + GAP_Y }
-  }
-  if (role >= 6 && role <= 8) {
-    const i = role - 6
-    return { x: (i + 1) * rowW, y: 2 * (NODE_HEIGHT + GAP_Y) }
-  }
-  if (role >= 9 && role <= 10) {
-    const i = role - 9
-    return { x: (i + 1.5) * rowW, y: 3 * (NODE_HEIGHT + GAP_Y) }
-  }
-  return { x: 0, y: 0 }
-}
-
-const CONNECTIONS: [number, number][] = [
-  [1, 2],
-  [1, 3],
-  [1, 4],
-  [1, 5],
-  [2, 6],
-  [3, 7],
-  [4, 8],
-  [6, 9],
-  [7, 10],
-]
+const NODE_WIDTH = 120
+const NODE_HEIGHT = 56
+const GAP_X = 16
+const GAP_Y = 32
 
 export const OrgChart = React.forwardRef<HTMLDivElement, Props>(function OrgChart({ rows }, ref) {
+  const n = Math.max(1, rows.length)
   const byNumber = new Map(rows.map((r) => [r.number, r]))
-
-  const width = 4 * (NODE_WIDTH + GAP_X)
-  const height = 3 * (NODE_HEIGHT + GAP_Y) + NODE_HEIGHT
+  const { width, height } = getChartDimensions(n, NODE_WIDTH, NODE_HEIGHT, GAP_X, GAP_Y)
+  const connections = getConnections(n)
 
   return (
     <div className="org-chart-wrapper" ref={ref}>
@@ -55,14 +31,13 @@ export const OrgChart = React.forwardRef<HTMLDivElement, Props>(function OrgChar
           height={height}
           style={{ position: 'absolute', left: 0, top: 0, pointerEvents: 'none' }}
         >
-          {CONNECTIONS.map(([from, to], i) => {
-            const fromPos = getPosition(from)
-            const toPos = getPosition(to)
+          {connections.map(([from, to], i) => {
+            const fromPos = getPosition(from, n, NODE_WIDTH, NODE_HEIGHT, GAP_X, GAP_Y, width)
+            const toPos = getPosition(to, n, NODE_WIDTH, NODE_HEIGHT, GAP_X, GAP_Y, width)
             const x1 = fromPos.x
             const y1 = fromPos.y + NODE_HEIGHT
             const x2 = toPos.x
             const y2 = toPos.y
-            // fromPos/toPos are center-x; connector goes to node center top/bottom
             const midY = (y1 + y2) / 2
             return (
               <path
@@ -76,20 +51,21 @@ export const OrgChart = React.forwardRef<HTMLDivElement, Props>(function OrgChar
           })}
         </svg>
         <div className="org-chart-nodes" style={{ width, height, position: 'relative' }}>
-          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => {
-            const pos = getPosition(n)
-            const row = byNumber.get(n)
-            const label = row?.name || (n === 1 ? 'CEO' : `#${n}`)
+          {getTiers(n).flat().map((num) => {
+            const pos = getPosition(num, n, NODE_WIDTH, NODE_HEIGHT, GAP_X, GAP_Y, width)
+            const row = byNumber.get(num)
+            const label = row?.name || (num === 1 ? 'CEO' : `#${num}`)
             const sub = row?.title || ''
             return (
               <div
-                key={n}
+                key={num}
                 className="org-chart-node"
                 style={{
                   left: pos.x - NODE_WIDTH / 2,
                   top: pos.y,
                   width: NODE_WIDTH,
                   height: NODE_HEIGHT,
+                  animationDelay: `${(num % 10) * 0.15}s`,
                 }}
               >
                 <div className="org-chart-node-label">{label}</div>

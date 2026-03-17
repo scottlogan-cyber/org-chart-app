@@ -3,23 +3,12 @@ import type { OrgRow } from '../types'
 interface Props {
   rows: OrgRow[]
   onChange: (rows: OrgRow[]) => void
+  maxRows?: number
 }
 
-const DEFAULT_ROWS = 10
-
-export function NumberNameTable({ rows, onChange }: Props) {
-  const ensureRows = (): OrgRow[] => {
-    const result = [...rows]
-    while (result.length < DEFAULT_ROWS) {
-      result.push({ number: result.length + 1, name: '', title: '' })
-    }
-    return result.slice(0, DEFAULT_ROWS)
-  }
-
-  const current = ensureRows()
-
+export function NumberNameTable({ rows, onChange, maxRows }: Props) {
   const update = (index: number, field: 'name' | 'title', value: string) => {
-    const next = current.map((r, i) =>
+    const next = rows.map((r, i) =>
       i === index ? { ...r, [field]: value } : r
     )
     onChange(next)
@@ -28,7 +17,8 @@ export function NumberNameTable({ rows, onChange }: Props) {
   return (
     <div className="number-name-table">
       <h3>Position → Name</h3>
-      <p className="table-hint">1 = CEO, 2–5 = C-suite, 6–8 = Managers, 9–10 = Team</p>
+      <p className="table-hint">1 = CEO, then tiers by row. Change chart size above to add more positions.</p>
+      <div className="number-name-table-scroll">
       <table>
         <thead>
           <tr>
@@ -38,7 +28,7 @@ export function NumberNameTable({ rows, onChange }: Props) {
           </tr>
         </thead>
         <tbody>
-          {current.map((row, i) => (
+          {rows.map((row, i) => (
             <tr key={row.number}>
               <td>{row.number}</td>
               <td>
@@ -61,6 +51,7 @@ export function NumberNameTable({ rows, onChange }: Props) {
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   )
 }
