@@ -1,0 +1,15 @@
+Vercel login (opens in Chrome)
+-----------------------------
+Copy the line below, paste it into Terminal, and press Enter.
+No need to cd into this folder first.
+
+cd ~ && NODE_TLS_REJECT_UNAUTHORIZED=0 BROWSER="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" npx vercel login
+
+When Chrome opens, sign in or sign up at Vercel. Then return to Terminal.
+
+---
+After login: deploy to get your URL (run from anywhere)
+-----------------------------
+bash ~/deploy-org-chart.sh
+
+This copies the app to /tmp, builds, and deploys (avoids permission errors in the Desktop folder). Vercel will print your live URL — share it with your team.
